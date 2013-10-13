@@ -38,7 +38,7 @@ func (h HtmlReporter) Report(results []*Result) {
 	for _, each := range results {
 		row := resultRow{}
 		row.Description = each.Reason
-		row.Comment = each.Target.Description()
+		row.Comment = each.Target.Comment()
 		row.Passed = each.Passed
 		if each.Passed {
 			row.Verdict = "passed"

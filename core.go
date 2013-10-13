@@ -9,7 +9,7 @@ const VERSION = "go-selfdiagnose 1.0"
 // Task describes a diagnostic task that can be run.
 type Task interface {
 	Run(ctx *Context, result *Result)
-	Description() string
+	Comment() string
 }
 
 // Result captures the execution result of a Task.
@@ -24,17 +24,21 @@ type Context struct {
 	Variables map[string]interface{}
 }
 
+// CommentHolder is what is says.
+type CommentHolder struct {
+	comment string
+}
+
+func (h CommentHolder) Comment() string {
+	return h.comment
+}
+
+func (h *CommentHolder) SetComment(text string) {
+	h.comment = text
+}
+
 func newContext() *Context {
 	return &Context{map[string]interface{}{}}
-}
-
-// CommentHolder is used to embed a comment.
-type CommentHolder struct {
-	Comment string
-}
-
-func (h CommentHolder) Description() string {
-	return h.Comment
 }
 
 // Reporter describes how to report task execution results.

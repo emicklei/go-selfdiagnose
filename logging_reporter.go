@@ -15,6 +15,11 @@ func (l LoggingReporter) Report(results []*Result) {
 		if !each.Passed {
 			verdict = "failed"
 		}
-		log.Printf("[%s] %s", verdict, each.Reason)
+		comment, separator := "", ""
+		if len(each.Target.Comment()) > 0 {
+			comment = each.Target.Comment()
+			separator = "."
+		}
+		log.Printf("[%s] %s%s %s", verdict, comment, separator, each.Reason)
 	}
 }

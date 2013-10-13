@@ -20,5 +20,7 @@ func TestCheckDirectory(t *testing.T) {
 }
 
 func ExampleCheckDirectory() {
-	Register(CheckDirectory{Path: "/tmp", CanAppend: true})
+	check := CheckDirectory{Path: "/tmp", CanAppend: true}
+	check.SetComment("something")
+	Register(check)
 }
