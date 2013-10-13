@@ -4,24 +4,37 @@ package selfdiagnose
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
-// TODO: maybe a separate Registry object to avoid globallness.
+var DefaultRegistry = Registry{}
 
-var tasks = []Task{}
+// Registry holds the collection or registered Tasks. It can run them all.
+type Registry struct {
+	tasks []Task
+}
 
-// Register adds a task to the global registry
-func Register(t Task) {
-	tasks = append(tasks, t)
+// Register adds a task to the collection.
+func (r *Registry) Register(t Task) {
+	r.tasks = append(r.tasks, t)
 }
 
 // Run executes all registered task (in order) and reports using a Reporter.
-func Run(r Reporter) {
+func (r Registry) Run(rep Reporter) {
 	ctx := newContext()
 	results := []*Result{}
-	for _, each := range tasks {
+	for _, each := range r.tasks {
 		res := new(Result)
 		res.Target = each
 		each.Run(ctx, res)
 		results = append(results, res)
 	}
-	r.Report(results)
+	rep.Report(results)
+}
+
+// Register adds a task to the default registry
+func Register(t Task) {
+	DefaultRegistry.Register(t)
+}
+
+// Run delegates to the DefaultRegistry
+func Run(rep Reporter) {
+	DefaultRegistry.Run(rep)
 }

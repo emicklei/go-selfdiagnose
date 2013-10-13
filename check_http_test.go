@@ -15,3 +15,10 @@ func TestCheckHttp(t *testing.T) {
 	Register(check)
 	Run(LoggingReporter{})
 }
+
+func ExampleCheckHttp() {
+	get, _ := http.NewRequest("GET", "http://ernestmicklei.com", nil)
+	check := CheckHttp{Request: get}
+	check.SetComment("blog access")
+	Register(check)
+}
