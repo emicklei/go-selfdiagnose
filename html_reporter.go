@@ -20,6 +20,7 @@ type resultRow struct {
 	Description string
 	Passed      bool
 	Verdict     string
+	RowStyle    string
 }
 
 type resultTable struct {
@@ -30,12 +31,17 @@ type resultTable struct {
 	Version     string
 }
 
+func (r resultTable) TotalCount() int {
+	return r.PassedCount + r.FailedCount
+}
+
 // Report produces a HTML report including a summary
 func (h HtmlReporter) Report(results []*Result) {
 	rows := []resultRow{}
 	passedCount := 0
 	failedCount := 0
-	for _, each := range results {
+	completedIn := time.Duration(0)
+	for i, each := range results {
 		row := resultRow{}
 		row.Description = each.Reason
 		row.Comment = each.Target.Comment()
@@ -43,27 +49,48 @@ func (h HtmlReporter) Report(results []*Result) {
 		if each.Passed {
 			row.Verdict = "passed"
 			passedCount++
+			if i%2 == 0 {
+				row.RowStyle = "even"
+			} else {
+				row.RowStyle = "odd"
+			}
+
 		} else {
 			row.Verdict = "failed"
 			failedCount++
 		}
 		rows = append(rows, row)
+		completedIn += each.CompletedIn
 	}
-	resultTable := resultTable{Rows: rows, PassedCount: passedCount, FailedCount: failedCount, Version: VERSION}
+	resultTable := resultTable{Rows: rows, PassedCount: passedCount, FailedCount: failedCount, CompletedIn: completedIn, Version: VERSION}
 	htmlTemplate.Execute(h.Writer, resultTable)
 }
 
 var htmlTemplate = template.Must(template.New("Page").Parse(`
 <html>
 <body>
+	<style>
+		body, table {
+			font-family:verdana;
+			font-size:small;
+		}
+		.odd { background-color:#F3F5F8 }
+		.even { background-color:#DCE2EB }
+		.table {
+			padding: 4px;
+		}
+		.passed { color: #000; }
+		.failed { color: #0000ff; }
+		.error { color: #ff0000; }	
+	</style>
 	<table>
-		<tr>
+		<tr class="odd">
 			<th>Check</th>
 			<th>Comment</th>
 			<th>Description</th>
 		</tr>
 		{{range .Rows}}
-		<tr>
+		<tr class="{{.RowStyle}}">
 			<td>{{.Verdict}}</td>	
 			<td>{{.Comment}}</td>	
 			<td>{{.Description}}</td>	
@@ -73,9 +100,11 @@ var htmlTemplate = template.Must(template.New("Page").Parse(`
 	
 	<table>
 		<tr>			
+			<td>Checks:{{.TotalCount}}</td>
 			<td>Passed:{{.PassedCount}}</td>
-			<td>Failed:{{.PassedCount}}</td>
-			<td>{{.Version}}</td>
+			<td>Failures:{{.FailedCount}}</td>
+			<td>Time:{{.CompletedIn}}</td>
+			<td>Version:{{.Version}}</td>
 		</tr>
 	</table>
 </body>

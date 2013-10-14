@@ -4,6 +4,8 @@ package selfdiagnose
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
+import "time"
+
 const VERSION = "go-selfdiagnose 1.0"
 
 // Task describes a diagnostic task that can be run.
@@ -14,9 +16,10 @@ type Task interface {
 
 // Result captures the execution result of a Task.
 type Result struct {
-	Target Task
-	Passed bool
-	Reason string
+	Target      Task
+	Passed      bool
+	Reason      string
+	CompletedIn time.Duration
 }
 
 // Context can be used to read/write variable during the execution of a selfdiagnose run.

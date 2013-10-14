@@ -4,6 +4,8 @@ package selfdiagnose
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
+import "time"
+
 var DefaultRegistry = Registry{}
 
 // Registry holds the collection or registered Tasks. It can run them all.
@@ -23,7 +25,9 @@ func (r Registry) Run(rep Reporter) {
 	for _, each := range r.tasks {
 		res := new(Result)
 		res.Target = each
+		now := time.Now()
 		each.Run(ctx, res)
+		res.CompletedIn = time.Now().Sub(now)
 		results = append(results, res)
 	}
 	rep.Report(results)
