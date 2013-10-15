@@ -16,11 +16,11 @@ type HtmlReporter struct {
 }
 
 type resultRow struct {
-	Comment     string
-	Description string
-	Passed      bool
-	Verdict     string
-	RowStyle    string
+	Comment          string
+	Description      string
+	Passed           bool
+	RowStyle         string
+	DescriptionStyle string
 }
 
 type resultTable struct {
@@ -47,7 +47,7 @@ func (h HtmlReporter) Report(results []*Result) {
 		row.Comment = each.Target.Comment()
 		row.Passed = each.Passed
 		if each.Passed {
-			row.Verdict = "passed"
+			row.DescriptionStyle = "passed"
 			passedCount++
 			if i%2 == 0 {
 				row.RowStyle = "even"
@@ -56,7 +56,7 @@ func (h HtmlReporter) Report(results []*Result) {
 			}
 
 		} else {
-			row.Verdict = "failed"
+			row.DescriptionStyle = "failed"
 			failedCount++
 		}
 		rows = append(rows, row)
@@ -85,27 +85,20 @@ var htmlTemplate = template.Must(template.New("Page").Parse(`
 	</style>
 	<table>
 		<tr class="odd">
-			<th>Check</th>
 			<th>Comment</th>
 			<th>Description</th>
 		</tr>
 		{{range .Rows}}
 		<tr class="{{.RowStyle}}">
-			<td>{{.Verdict}}</td>	
 			<td>{{.Comment}}</td>	
-			<td>{{.Description}}</td>	
+			<td class="{{.DescriptionStyle}}">{{.Description}}</td>	
 		</tr>		
 		{{end}}
 	</table>
 	
-	<table>
-		<tr>			
-			<td>Checks:{{.TotalCount}}</td>
-			<td>Passed:{{.PassedCount}}</td>
-			<td>Failures:{{.FailedCount}}</td>
-			<td>Time:{{.CompletedIn}}</td>
-			<td>Version:{{.Version}}</td>
-		</tr>
-	</table>
+	<h4>
+		Checks: {{.TotalCount}} , Failures: {{.FailedCount}}, Time: {{.CompletedIn}} |
+		{{.Version}}</td>
+	</h4>
 </body>
 </html>`))
