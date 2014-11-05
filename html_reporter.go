@@ -17,7 +17,7 @@ type HtmlReporter struct {
 
 type resultRow struct {
 	Comment          string
-	Description      string
+	Description      template.HTML
 	Passed           bool
 	RowStyle         string
 	DescriptionStyle string
@@ -43,7 +43,7 @@ func (h HtmlReporter) Report(results []*Result) {
 	completedIn := time.Duration(0)
 	for i, each := range results {
 		row := resultRow{}
-		row.Description = each.Reason
+		row.Description = template.HTML(each.Reason)
 		row.Comment = each.Target.Comment()
 		row.Passed = each.Passed
 		if each.Passed {
