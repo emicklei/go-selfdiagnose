@@ -18,8 +18,8 @@ type CheckHttp struct {
 // Run sends the request and updates the result.
 func (c CheckHttp) Run(ctx *Context, result *Result) {
 	client := new(http.Client)
-	resp, err := client.Do(c.Request)	
-	if resp.Body ! nil {
+	resp, err := client.Do(c.Request)
+	if resp.Body != nil {
 		defer resp.Body.Close()
 	}
 	if err != nil {
@@ -32,7 +32,7 @@ func (c CheckHttp) Run(ctx *Context, result *Result) {
 		result.Reason = resp.Status
 		return
 	}
-	
+
 	result.Passed = true
 	result.Reason = fmt.Sprintf("%s %s => %s", c.Request.Method, c.Request.URL.String(), resp.Status)
 }
