@@ -20,7 +20,10 @@ func (r *Registry) Register(t Task) {
 
 // Run executes all registered task (in order) and reports using a Reporter.
 func (r Registry) Run(rep Reporter) {
-	ctx := newContext()
+	r.RunWithContext(rep, NewContext())
+}
+
+func (r Registry) RunWithContext(rep Reporter, ctx *Context) {
 	results := []*Result{}
 	for _, each := range r.tasks {
 		res := new(Result)

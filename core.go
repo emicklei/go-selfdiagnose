@@ -40,7 +40,8 @@ func (h *CommentHolder) SetComment(text string) {
 	h.comment = text
 }
 
-func newContext() *Context {
+// NewContext creates a new empty Context to run tasks.
+func NewContext() *Context {
 	return &Context{map[string]interface{}{}}
 }
 
