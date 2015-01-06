@@ -19,13 +19,13 @@ type CheckHttp struct {
 func (c CheckHttp) Run(ctx *Context, result *Result) {
 	client := new(http.Client)
 	resp, err := client.Do(c.Request)
-	if resp.Body != nil {
-		defer resp.Body.Close()
-	}
 	if err != nil {
 		result.Passed = false
 		result.Reason = err.Error()
 		return
+	}
+	if resp.Body != nil {
+		defer resp.Body.Close()
 	}
 	if resp.StatusCode != http.StatusOK {
 		result.Passed = false
