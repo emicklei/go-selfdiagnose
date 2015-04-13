@@ -26,12 +26,30 @@ func (r Registry) Run(rep Reporter) {
 func (r Registry) RunWithContext(rep Reporter, ctx *Context) {
 	results := []*Result{}
 	for _, each := range r.tasks {
-		res := new(Result)
-		res.Target = each
+		resultCh := make(chan *Result, 1)
 		now := time.Now()
-		each.Run(ctx, res)
-		res.CompletedIn = time.Now().Sub(now)
-		results = append(results, res)
+		go func() {
+			res := new(Result)
+			res.Target = each
+			each.Run(ctx, res)
+			resultCh <- res // will not block if closed
+		}()
+		timeout := each.Timeout()
+		if timeout == 0 {
+			timeout = 1 * time.Second
+		}
+		var result *Result
+		select {
+		case <-time.After(timeout):
+			res := new(Result)
+			res.Target = each
+			res.Passed = false
+			res.Reason = "task did not complete within timeout"
+			result = res
+		case result, _ = <-resultCh:
+		}
+		result.CompletedIn = time.Now().Sub(now)
+		results = append(results, result)
 	}
 	rep.Report(results)
 }

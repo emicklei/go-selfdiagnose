@@ -11,7 +11,7 @@ import (
 
 // CheckHttp send a http.Request and check the status code. 200 OK = Passed
 type CheckHttp struct {
-	CommentHolder
+	BasicTask
 	Request *http.Request
 }
 

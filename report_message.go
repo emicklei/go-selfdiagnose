@@ -2,7 +2,7 @@ package selfdiagnose
 
 // ReportMessage simply does what it says. Can have comment too.
 type ReportMessage struct {
-	CommentHolder
+	BasicTask
 	Message string
 }
 

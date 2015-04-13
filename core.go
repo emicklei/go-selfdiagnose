@@ -12,6 +12,7 @@ const VERSION = "go-selfdiagnose 1.0"
 type Task interface {
 	Run(ctx *Context, result *Result)
 	Comment() string
+	Timeout() time.Duration
 }
 
 // Result captures the execution result of a Task.
@@ -27,17 +28,25 @@ type Context struct {
 	Variables map[string]interface{}
 }
 
-// CommentHolder is what is says.
-type CommentHolder struct {
+type BasicTask struct {
 	comment string
+	timeout time.Duration
 }
 
-func (h CommentHolder) Comment() string {
-	return h.comment
+func (t BasicTask) Comment() string {
+	return t.comment
 }
 
-func (h *CommentHolder) SetComment(text string) {
-	h.comment = text
+func (t *BasicTask) SetComment(text string) {
+	t.comment = text
+}
+
+func (t BasicTask) Timeout() time.Duration {
+	return t.timeout
+}
+
+func (t *BasicTask) SetTimeout(after time.Duration) {
+	t.timeout = after
 }
 
 // NewContext creates a new empty Context to run tasks.

@@ -7,7 +7,7 @@ import (
 
 // CheckDirectory reports whether a directory (path) is readable and/or appendable
 type CheckDirectory struct {
-	CommentHolder
+	BasicTask
 	Path      string
 	CanAppend bool
 }
