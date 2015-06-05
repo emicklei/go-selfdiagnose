@@ -5,14 +5,17 @@ package selfdiagnose
 // that can be found in the LICENSE file.
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 )
 
 // CheckHttp send a http.Request and check the status code. 200 OK = Passed
 type CheckHttp struct {
 	BasicTask
-	Request *http.Request
+	Request      *http.Request
+	ShowResponse bool
 }
 
 // Run sends the request and updates the result.
@@ -33,6 +36,15 @@ func (c CheckHttp) Run(ctx *Context, result *Result) {
 		return
 	}
 
+	summary := fmt.Sprintf("%s %s => %s", c.Request.Method, c.Request.URL.String(), resp.Status)
 	result.Passed = true
-	result.Reason = fmt.Sprintf("%s %s => %s", c.Request.Method, c.Request.URL.String(), resp.Status)
+	if c.ShowResponse {
+		var buf bytes.Buffer
+		buf.WriteString(summary)
+		buf.WriteString("\n\n")
+		io.Copy(&buf, resp.Body)
+		summary = buf.String()
+	} else {
+		result.Reason = summary
+	}
 }

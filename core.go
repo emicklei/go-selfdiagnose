@@ -1,12 +1,12 @@
 package selfdiagnose
 
-// Copyright 2013 Ernest Micklei. All rights reserved.
+// Copyright 2015 Ernest Micklei. All rights reserved.
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
 import "time"
 
-const VERSION = "go-selfdiagnose 1.0"
+const VERSION = "go-selfdiagnose 1.0.1"
 
 // Task describes a diagnostic task that can be run.
 type Task interface {
