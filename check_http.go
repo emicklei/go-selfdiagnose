@@ -44,7 +44,6 @@ func (c CheckHttp) Run(ctx *Context, result *Result) {
 		buf.WriteString("\n\n")
 		io.Copy(&buf, resp.Body)
 		summary = buf.String()
-	} else {
-		result.Reason = summary
 	}
+	result.Reason = summary
 }
