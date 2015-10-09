@@ -8,6 +8,8 @@ import (
 	"html/template"
 	"io"
 	"time"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 // HtmlReporter is to produce a HTML report and it written on an io.Writer.
@@ -63,6 +65,8 @@ func (h HtmlReporter) Report(results []*Result) {
 		completedIn += each.CompletedIn
 	}
 	resultTable := resultTable{Rows: rows, PassedCount: passedCount, FailedCount: failedCount, CompletedIn: completedIn, Version: VERSION}
+	spew.Dump(resultTable)
+
 	htmlTemplate.Execute(h.Writer, resultTable)
 }
 
@@ -98,7 +102,7 @@ var htmlTemplate = template.Must(template.New("Page").Parse(`
 	
 	<h4>
 		Checks: {{.TotalCount}} , Failures: {{.FailedCount}}, Time: {{.CompletedIn}} |
-		{{.Version}}</td>
+		{{.Version}} | <a href="?format=xml">XML</a></td>
 	</h4>
 </body>
 </html>`))

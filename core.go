@@ -6,7 +6,7 @@ package selfdiagnose
 
 import "time"
 
-const VERSION = "go-selfdiagnose 1.0.1"
+const VERSION = "go-selfdiagnose 1.0.2"
 
 // Task describes a diagnostic task that can be run.
 type Task interface {

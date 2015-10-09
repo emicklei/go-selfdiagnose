@@ -4,7 +4,10 @@ package selfdiagnose
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
 
 var DefaultRegistry = Registry{}
 
@@ -19,7 +22,10 @@ func (r *Registry) Register(t Task) {
 }
 
 // Run executes all registered task (in order) and reports using a Reporter.
-func (r Registry) Run(rep Reporter) {
+func (r Registry) Run(rep Reporter, request *http.Request) {
+	//	query := request.URL.Query()
+	//	format := query.Get("format")
+
 	r.RunWithContext(rep, NewContext())
 }
 
@@ -51,6 +57,8 @@ func (r Registry) RunWithContext(rep Reporter, ctx *Context) {
 		result.CompletedIn = time.Now().Sub(now)
 		results = append(results, result)
 	}
+	// format hier beschikbaar maken en op basis hiervan
+	// beslissen welke output er moet komen
 	rep.Report(results)
 }
 
@@ -61,5 +69,5 @@ func Register(t Task) {
 
 // Run delegates to the DefaultRegistry
 func Run(rep Reporter) {
-	DefaultRegistry.Run(rep)
+	DefaultRegistry.Run(rep, nil)
 }
