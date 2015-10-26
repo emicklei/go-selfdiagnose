@@ -29,6 +29,7 @@ type resultTable struct {
 	FailedCount int
 	CompletedIn time.Duration
 	Version     string
+	ReportDate  time.Time
 }
 
 func (r resultTable) TotalCount() int {
@@ -37,32 +38,7 @@ func (r resultTable) TotalCount() int {
 
 // Report produces a HTML report including a summary
 func (h HtmlReporter) Report(results []*Result) {
-	rows := []resultRow{}
-	passedCount := 0
-	failedCount := 0
-	completedIn := time.Duration(0)
-	for i, each := range results {
-		row := resultRow{}
-		row.Description = template.HTML(each.Reason)
-		row.Comment = each.Target.Comment()
-		row.Passed = each.Passed
-		if each.Passed {
-			row.DescriptionStyle = "passed"
-			passedCount++
-			if i%2 == 0 {
-				row.RowStyle = "even"
-			} else {
-				row.RowStyle = "odd"
-			}
-
-		} else {
-			row.DescriptionStyle = "failed"
-			failedCount++
-		}
-		rows = append(rows, row)
-		completedIn += each.CompletedIn
-	}
-	resultTable := resultTable{Rows: rows, PassedCount: passedCount, FailedCount: failedCount, CompletedIn: completedIn, Version: VERSION}
+	resultTable := buildResultTable(results)
 	htmlTemplate.Execute(h.Writer, resultTable)
 }
 
