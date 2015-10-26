@@ -5,8 +5,8 @@ package selfdiagnose
 // that can be found in the LICENSE file.
 
 import (
+	"html/template"
 	"io"
-	"text/template"
 	"time"
 )
 
@@ -17,7 +17,7 @@ type HtmlReporter struct {
 
 type resultRow struct {
 	Comment          string
-	Description      string
+	Description      template.HTML
 	Passed           bool
 	RowStyle         string
 	DescriptionStyle string

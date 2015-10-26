@@ -1,6 +1,9 @@
 package selfdiagnose
 
-import "time"
+import (
+	"html/template"
+	"time"
+)
 
 func buildResultTable(results []*Result) resultTable {
 	rows := []resultRow{}
@@ -9,7 +12,7 @@ func buildResultTable(results []*Result) resultTable {
 	completedIn := time.Duration(0)
 	for i, each := range results {
 		row := resultRow{}
-		row.Description = each.Reason
+		row.Description = template.HTML(each.Reason)
 		row.Comment = each.Target.Comment()
 		row.Passed = each.Passed
 		if each.Passed {
