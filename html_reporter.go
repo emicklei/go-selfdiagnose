@@ -5,11 +5,9 @@ package selfdiagnose
 // that can be found in the LICENSE file.
 
 import (
-	"html/template"
 	"io"
+	"text/template"
 	"time"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 // HtmlReporter is to produce a HTML report and it written on an io.Writer.
@@ -19,7 +17,7 @@ type HtmlReporter struct {
 
 type resultRow struct {
 	Comment          string
-	Description      template.HTML
+	Description      string
 	Passed           bool
 	RowStyle         string
 	DescriptionStyle string
@@ -31,6 +29,7 @@ type resultTable struct {
 	FailedCount int
 	CompletedIn time.Duration
 	Version     string
+	ReportDate  time.Time
 }
 
 func (r resultTable) TotalCount() int {
@@ -39,34 +38,7 @@ func (r resultTable) TotalCount() int {
 
 // Report produces a HTML report including a summary
 func (h HtmlReporter) Report(results []*Result) {
-	rows := []resultRow{}
-	passedCount := 0
-	failedCount := 0
-	completedIn := time.Duration(0)
-	for i, each := range results {
-		row := resultRow{}
-		row.Description = template.HTML(each.Reason)
-		row.Comment = each.Target.Comment()
-		row.Passed = each.Passed
-		if each.Passed {
-			row.DescriptionStyle = "passed"
-			passedCount++
-			if i%2 == 0 {
-				row.RowStyle = "even"
-			} else {
-				row.RowStyle = "odd"
-			}
-
-		} else {
-			row.DescriptionStyle = "failed"
-			failedCount++
-		}
-		rows = append(rows, row)
-		completedIn += each.CompletedIn
-	}
-	resultTable := resultTable{Rows: rows, PassedCount: passedCount, FailedCount: failedCount, CompletedIn: completedIn, Version: VERSION}
-	spew.Dump(resultTable)
-
+	resultTable := buildResultTable(results)
 	htmlTemplate.Execute(h.Writer, resultTable)
 }
 
@@ -102,7 +74,7 @@ var htmlTemplate = template.Must(template.New("Page").Parse(`
 	
 	<h4>
 		Checks: {{.TotalCount}} , Failures: {{.FailedCount}}, Time: {{.CompletedIn}} |
-		{{.Version}} | <a href="?format=xml">XML</a></td>
+		{{.Version}}</td>
 	</h4>
 </body>
 </html>`))
