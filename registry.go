@@ -30,18 +30,28 @@ func (r Registry) RunWithContext(rep Reporter, ctx *Context) {
 		now := time.Now()
 		go func() {
 			res := new(Result)
+			if t, ok := each.(HasSeverity); ok {
+				res.Severity = t.Severity()
+			}
 			res.Target = each
 			each.Run(ctx, res)
 			resultCh <- res // will not block if closed
 		}()
-		timeout := each.Timeout()
-		if timeout == 0 {
-			timeout = 1 * time.Second
+		timeout := 1 * time.Second
+		// task can override the non-zero value
+		if t, ok := each.(HasTimeout); ok {
+			if t.Timeout() > 0 {
+				timeout = t.Timeout()
+			}
 		}
 		var result *Result
 		select {
 		case <-time.After(timeout):
+			// task took longer than timeout so create result to report that
 			res := new(Result)
+			if t, ok := each.(HasSeverity); ok {
+				res.Severity = t.Severity()
+			}
 			res.Target = each
 			res.Passed = false
 			res.Reason = "task did not complete within timeout"

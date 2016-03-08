@@ -19,6 +19,8 @@ type resultRow struct {
 	Comment          string
 	Description      template.HTML
 	Passed           bool
+	Severity         string
+	Time             time.Duration
 	RowStyle         string
 	DescriptionStyle string
 }
@@ -36,6 +38,10 @@ func (r resultTable) TotalCount() int {
 	return r.PassedCount + r.FailedCount
 }
 
+func (r resultTable) CSS() template.CSS {
+	return template.CSS(css())
+}
+
 // Report produces a HTML report including a summary
 func (h HtmlReporter) Report(results []*Result) {
 	resultTable := buildResultTable(results)
@@ -43,31 +49,30 @@ func (h HtmlReporter) Report(results []*Result) {
 }
 
 var htmlTemplate = template.Must(template.New("Page").Parse(`
-<html>
+<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<meta charset="UTF-8">
+	</head>
 <body>
 	<style>
-		body, table {
-			font-family:verdana;
-			font-size:small;
-		}
-		.odd { background-color:#F3F5F8 }
-		.even { background-color:#DCE2EB }
-		.table {
-			padding: 4px;
-		}
-		.passed { color: #000; }
-		.failed { color: #0000ff; }
-		.error { color: #ff0000; }	
+		{{.CSS}}	
 	</style>
 	<table>
 		<tr class="odd">
 			<th>Comment</th>
-			<th>Description</th>
+			<th>Result</th>
+			<th>Message</th>
+			<th>Severity</th>
+			<th>Time</th>
 		</tr>
 		{{range .Rows}}
 		<tr class="{{.RowStyle}}">
-			<td>{{.Comment}}</td>	
-			<td class="{{.DescriptionStyle}}">{{.Description}}</td>	
+			<td>{{.Comment}}</td>
+			<td>{{if .Passed}} OK {{ else }} FAIL {{ end }}</td>	
+			<td>{{.Description}}</td>	
+			<td>{{.Severity}}</td>	
+			<td>{{.Time}}</td>	
 		</tr>		
 		{{end}}
 	</table>
@@ -78,3 +83,50 @@ var htmlTemplate = template.Must(template.New("Page").Parse(`
 	</h4>
 </body>
 </html>`))
+
+func buildResultTable(results []*Result) resultTable {
+	rows := []resultRow{}
+	passedCount := 0
+	failedCount := 0
+	completedIn := time.Duration(0)
+	for i, each := range results {
+		row := resultRow{}
+		row.Description = template.HTML(each.Reason)
+		row.Comment = each.Target.Comment()
+		row.Time = each.CompletedIn
+		row.Passed = each.Passed
+		if i%2 == 0 {
+			row.RowStyle = "even "
+		} else {
+			row.RowStyle = "odd "
+		}
+		if !each.Passed {
+			row.RowStyle += "failed "
+
+			if len(each.Severity) > 0 {
+				row.RowStyle += string(each.Severity)
+				row.Severity = string(each.Severity)
+			}
+		}
+		if each.Passed {
+			row.DescriptionStyle = "passed"
+			passedCount++
+		} else {
+			row.DescriptionStyle = "failed"
+			failedCount++
+		}
+		rows = append(rows, row)
+		completedIn += each.CompletedIn
+	}
+
+	resultTable := resultTable{
+		Rows:        rows,
+		PassedCount: passedCount,
+		FailedCount: failedCount,
+		CompletedIn: completedIn,
+		Version:     VERSION,
+		ReportDate:  time.Now(),
+	}
+	return resultTable
+
+}

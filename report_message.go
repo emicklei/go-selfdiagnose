@@ -9,4 +9,5 @@ type ReportMessage struct {
 func (r ReportMessage) Run(ctx *Context, result *Result) {
 	result.Passed = true
 	result.Reason = r.Message
+	result.Severity = SeverityNone
 }

@@ -4,7 +4,10 @@ package selfdiagnose
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 // LoggingReporter reports on the task by printing using standard log.
 type LoggingReporter struct{}
@@ -20,6 +23,11 @@ func (l LoggingReporter) Report(results []*Result) {
 			comment = each.Target.Comment()
 			separator = "."
 		}
-		log.Printf("[%s] %s%s %s", verdict, comment, separator, each.Reason)
+		severity := " "
+		// only show severity if set and not None
+		if len(each.Severity) > 0 && each.Severity != SeverityNone {
+			severity = fmt.Sprintf("<%s> ", each.Severity)
+		}
+		log.Printf("[%s]%s%s%s %s", verdict, severity, comment, separator, each.Reason)
 	}
 }

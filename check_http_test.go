@@ -12,8 +12,18 @@ func TestCheckHttp(t *testing.T) {
 	}
 	check := CheckHttp{Request: get}
 	check.SetComment("blog access")
-	Register(check)
-	Run(LoggingReporter{})
+
+	reg := &Registry{}
+	reg.Register(check)
+
+	rr := new(recordingReporter)
+	reg.Run(rr)
+	if len(rr.results) == 0 {
+		t.Fatal("no results")
+	}
+	if got, want := rr.results[0].Passed, true; got != want {
+		t.Errorf("got %v want %v", got, want)
+	}
 }
 
 func ExampleCheckHttp() {
