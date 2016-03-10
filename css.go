@@ -4,7 +4,7 @@ package selfdiagnose
 func css() string {
 	return `
 body, table {
-	font-family: Monaco, monospace;
+	font-family: 'Lucida Sans Typewriter', 'Lucida Console', monaco, 'Bitstream Vera Sans Mono', monospace;
 	font-size: small;
 }
 .odd {
