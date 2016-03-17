@@ -7,4 +7,4 @@ This is a simplified port of its [Java implementation](http://selfdiagnose.sourc
 
 Read the [full documentation](http://godoc.org/github.com/emicklei/go-selfdiagnose)
 
-(c) 2013, http://ernestmicklei.com. Apache v2 License
+(c) 2013-2016, http://ernestmicklei.com. Apache v2 License

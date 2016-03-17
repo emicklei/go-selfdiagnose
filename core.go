@@ -6,7 +6,7 @@ package selfdiagnose
 
 import "time"
 
-const VERSION = "go-selfdiagnose 1.2"
+const VERSION = "go-selfdiagnose 1.3"
 
 var since = time.Now()
 
