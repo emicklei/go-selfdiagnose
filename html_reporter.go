@@ -31,6 +31,7 @@ type resultTable struct {
 	FailedCount int
 	CompletedIn time.Duration
 	Version     string
+	Since       time.Time
 	ReportDate  time.Time
 }
 
@@ -78,8 +79,8 @@ var htmlTemplate = template.Must(template.New("Page").Parse(`
 	</table>
 	
 	<h4>
-		Checks: {{.TotalCount}} , Failures: {{.FailedCount}}, Time: {{.CompletedIn}} |
-		{{.Version}}</td>
+		Checks:{{.TotalCount}}, Failures:{{.FailedCount}}, Time:{{.CompletedIn}} |
+		{{.Version}} | <a href="?format=json">JSON</a> | since:{{.Since.Format "2006-01-02 3:04"}} report:{{.ReportDate.Format "2006-01-02 3:04"}} </td>
 	</h4>
 </body>
 </html>`))
@@ -125,6 +126,7 @@ func buildResultTable(results []*Result) resultTable {
 		FailedCount: failedCount,
 		CompletedIn: completedIn,
 		Version:     VERSION,
+		Since:       since,
 		ReportDate:  time.Now(),
 	}
 	return resultTable

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"time"
 )
 
@@ -21,11 +22,14 @@ func (j JSONReporter) Report(results []*Result) {
 	report := jsonReport{
 		SelfDiagnose: map[string]string{
 			"version": VERSION,
+			"since":   since.String(),
 		},
 		Run:     time.Now(),
 		Results: j.buildResults(results),
 	}
-	json.NewEncoder(j.Writer).Encode(report)
+	// silently ignore the errors
+	data, _ := json.MarshalIndent(report, "", "\t")
+	j.Writer.Write(data)
 }
 
 func (j JSONReporter) buildResults(results []*Result) (list []jsonResult) {
@@ -35,7 +39,7 @@ func (j JSONReporter) buildResults(results []*Result) (list []jsonResult) {
 			Status:   j.status(each.Passed),
 			Comment:  each.Target.Comment(),
 			Message:  each.Reason,
-			Duration: each.CompletedIn.String(),
+			Duration: strconv.FormatInt(each.CompletedIn.Nanoseconds()/1000000, 10), // ms
 			Severity: string(each.Severity),
 		})
 	}
