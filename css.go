@@ -5,7 +5,7 @@ func css() string {
 	return `
 body, table {
 	font-family: 'Lucida Sans Typewriter', 'Lucida Console', monaco, 'Bitstream Vera Sans Mono', monospace;
-	font-size: small;
+	font-size: 10px;
 }
 .odd {
 	background-color: #E6ECE9;
@@ -27,18 +27,8 @@ body, table {
 .even.failed.critical, .even.error {
 	background-color: #FF8282;
 }
-
-.even > td, .odd > td {
-	padding: 2px 4px;
-	white-space: pre;
-}
 .header {
 	background-color: #d6d6d6
 }
-.header > th {
-	padding: 2px 4px;
-}
-.table {
-	padding: 4px;
-}`
+`
 }

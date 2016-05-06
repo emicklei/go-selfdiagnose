@@ -1,9 +1,11 @@
-package selfdiagnose
+package task
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	. "github.com/emicklei/go-selfdiagnose"
 )
 
 // go test -v -test.run=TestCheckDirectory

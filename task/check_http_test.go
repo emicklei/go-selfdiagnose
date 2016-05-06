@@ -1,8 +1,10 @@
-package selfdiagnose
+package task
 
 import (
 	"net/http"
 	"testing"
+
+	. "github.com/emicklei/go-selfdiagnose"
 )
 
 func TestCheckHttp(t *testing.T) {

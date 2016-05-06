@@ -6,23 +6,23 @@ import "os"
 func TestReportInHtml(t *testing.T) {
 	reg := &Registry{}
 	{
-		check := CheckDirectory{Path: "/TestReportInHtml"}
+		check := ReportMessage{}
 		check.SetComment("test critical")
 		reg.Register(check)
 	}
 	{
-		check := CheckDirectory{Path: "/TestReportInHtml"}
+		check := ReportMessage{}
 		check.SetSeverity(SeverityWarning)
 		check.SetComment("test warning")
 		reg.Register(check)
 	}
 	{
-		check := CheckDirectory{Path: os.TempDir()}
+		check := ReportMessage{}
 		check.SetComment("test none")
 		reg.Register(check)
 	}
 	{
-		check := CheckDirectory{Path: os.TempDir()}
+		check := ReportMessage{}
 		check.SetComment("test odd/even")
 		reg.Register(check)
 	}

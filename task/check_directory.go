@@ -1,8 +1,10 @@
-package selfdiagnose
+package task
 
 import (
 	"fmt"
 	"os"
+
+	. "github.com/emicklei/go-selfdiagnose"
 )
 
 // CheckDirectory reports whether a directory (path) is readable and/or appendable

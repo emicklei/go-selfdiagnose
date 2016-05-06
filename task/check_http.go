@@ -1,4 +1,4 @@
-package selfdiagnose
+package task
 
 // Copyright 2013 Ernest Micklei. All rights reserved.
 // Use of this source code is governed by a license
@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	. "github.com/emicklei/go-selfdiagnose"
 )
 
 // CheckHttp send a http.Request and check the status code. 200 OK = Passed
