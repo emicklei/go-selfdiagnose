@@ -22,6 +22,8 @@ func (r ReportDiskusage) Run(ctx *selfdiagnose.Context, result *selfdiagnose.Res
 	fs := syscall.Statfs_t{}
 	err := syscall.Statfs(r.Path, &fs)
 	if err != nil {
+		result.Passed = false
+		result.Reason = err.Error()
 		return
 	}
 
