@@ -1,12 +1,13 @@
 package selfdiagnose
 
-// Copyright 2015 Ernest Micklei. All rights reserved.
+// Copyright 2015-2016 Ernest Micklei. All rights reserved.
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
 import "time"
 
-const VERSION = "1.4"
+// VERSION is used for including it in a report
+const VERSION = "1.5"
 
 var since = time.Now()
 
@@ -16,15 +17,18 @@ type Task interface {
 	Comment() string
 }
 
+// HasTimeout indicates whether a task can be timedout.
 type HasTimeout interface {
 	Timeout() time.Duration
 }
 
 // Result captures the execution result of a Task.
 type Result struct {
-	Target      Task
-	Passed      bool
-	Reason      string
+	Target Task
+	Passed bool
+
+	// Reason can be a string, template.HTML or any printable value.
+	Reason      interface{}
 	CompletedIn time.Duration
 	Severity    Severity
 }
@@ -34,28 +38,36 @@ type Context struct {
 	Variables map[string]interface{}
 }
 
+// Severity indicates whether a failing task is severe or not. See constants for possible values.
 type Severity string
 
+// HasSeverity indicates whether a task has a severity level.
 type HasSeverity interface {
 	Severity() Severity
 }
 
 const (
-	SeverityNone     Severity = "none"
-	SeverityWarning  Severity = "warning"
+	// SeverityNone indicates that a failed result is not severe
+	SeverityNone Severity = "none"
+	// SeverityWarning indicates that a failed result is some to look it but not urgent.
+	SeverityWarning Severity = "warning"
+	// SeverityCritical indicates that a failed result is making the system unhealthy.
 	SeverityCritical Severity = "critical"
 )
 
+// BasicTask can be used to embed in new created Task types.
 type BasicTask struct {
 	comment  string
 	timeout  time.Duration
 	severity Severity
 }
 
+// Comment returns a short description what this task is for.
 func (t BasicTask) Comment() string {
 	return t.comment
 }
 
+// SetComment is to set the comment
 func (t *BasicTask) SetComment(text string) {
 	t.comment = text
 }

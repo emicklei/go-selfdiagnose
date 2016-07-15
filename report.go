@@ -17,12 +17,12 @@ type runReport struct {
 }
 
 type taskReport struct {
-	Task     string `json:"task" xml:"task"`
-	Status   string `json:"status" xml:"status"`
-	Comment  string `json:"comment" xml:"comment"`
-	Message  string `json:"message" xml:"message"`
-	Duration string `json:"duration" xml:"duration"`
-	Severity string `json:"severity" xml:"severity"`
+	Task     string      `json:"task" xml:"task"`
+	Status   string      `json:"status" xml:"status"`
+	Comment  string      `json:"comment" xml:"comment"`
+	Message  interface{} `json:"message" xml:"message"`
+	Duration string      `json:"duration" xml:"duration"`
+	Severity string      `json:"severity" xml:"severity"`
 }
 
 func buildTaskReports(results []*Result) (list []taskReport) {

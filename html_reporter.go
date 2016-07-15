@@ -5,6 +5,7 @@ package selfdiagnose
 // that can be found in the LICENSE file.
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"time"
@@ -92,7 +93,15 @@ func buildResultTable(results []*Result) resultTable {
 	completedIn := time.Duration(0)
 	for i, each := range results {
 		row := resultRow{}
-		row.Description = template.HTML(each.Reason)
+		// make reason a HTML value
+		switch each.Reason.(type) {
+		case template.HTML:
+			row.Description = each.Reason.(template.HTML)
+		case string:
+			row.Description = template.HTML(each.Reason.(string))
+		default:
+			row.Description = template.HTML(fmt.Sprintf("%v", each.Reason))
+		}
 		row.Comment = each.Target.Comment()
 		row.Time = each.CompletedIn
 		row.Passed = each.Passed
