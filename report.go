@@ -53,7 +53,7 @@ func buildRunReport(results []*Result) runReport {
 
 func statusLabel(ok bool) string {
 	if !ok {
-		return "FAIL"
+		return "FAILED"
 	}
 	return "OK"
 }
