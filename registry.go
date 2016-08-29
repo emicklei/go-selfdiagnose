@@ -23,7 +23,8 @@ func (r Registry) Run(rep Reporter) {
 	r.RunWithContext(rep, NewContext())
 }
 
-func (r Registry) RunWithContext(rep Reporter, ctx *Context) {
+// RunTasks runs all registered tasks and returns the result of each.
+func (r Registry) RunTasks(ctx *Context) []*Result {
 	results := []*Result{}
 	for _, each := range r.tasks {
 		resultCh := make(chan *Result, 1)
@@ -61,7 +62,11 @@ func (r Registry) RunWithContext(rep Reporter, ctx *Context) {
 		result.CompletedIn = time.Now().Sub(now)
 		results = append(results, result)
 	}
-	rep.Report(results)
+	return results
+}
+
+func (r Registry) RunWithContext(rep Reporter, ctx *Context) {
+	rep.Report(r.RunTasks(ctx))
 }
 
 // Register adds a task to the default registry

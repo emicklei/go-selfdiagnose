@@ -1,11 +1,12 @@
 package selfdiagnose
 
-// Copyright 2015 Ernest Micklei. All rights reserved.
+// Copyright 2016 Ernest Micklei. All rights reserved.
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -30,5 +31,12 @@ func handleSelfdiagnose(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		reporter = HtmlReporter{w}
 	}
-	DefaultRegistry.RunWithContext(reporter, ctx)
+	results := DefaultRegistry.RunTasks(ctx)
+	ok := true
+	for _, each := range results {
+		ok = ok && each.Passed
+	}
+	// write header first
+	w.Header().Set("X-SelfDiagnose-OK", strconv.FormatBool(ok))
+	reporter.Report(results)
 }
