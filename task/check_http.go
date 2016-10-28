@@ -26,7 +26,7 @@ func (c CheckHttp) Run(ctx *Context, result *Result) {
 	resp, err := client.Do(c.Request)
 	if err != nil {
 		result.Passed = false
-		result.Reason = err.Error()
+		result.Reason = fmt.Sprintf("%s %s => %s", c.Request.Method, c.Request.URL.String(), err.Error())
 		return
 	}
 	if resp.Body != nil {
@@ -34,12 +34,10 @@ func (c CheckHttp) Run(ctx *Context, result *Result) {
 	}
 	if resp.StatusCode != http.StatusOK {
 		result.Passed = false
-		result.Reason = resp.Status
-		return
+	} else {
+		result.Passed = true
 	}
-
 	summary := fmt.Sprintf("%s %s => %s", c.Request.Method, c.Request.URL.String(), resp.Status)
-	result.Passed = true
 	if c.ShowResponse {
 		var buf bytes.Buffer
 		buf.WriteString(summary)
