@@ -18,25 +18,23 @@ type CheckHttp struct {
 	BasicTask
 	Request      *http.Request
 	ShowResponse bool
+	HTTPClient   *http.Client
 }
 
 // Run sends the request and updates the result.
 func (c CheckHttp) Run(ctx *Context, result *Result) {
-	client := new(http.Client)
+	client := c.HTTPClient
+	if client == nil {
+		client = http.DefaultClient
+	}
 	resp, err := client.Do(c.Request)
 	if err != nil {
 		result.Passed = false
 		result.Reason = fmt.Sprintf("%s %s => %s", c.Request.Method, c.Request.URL.String(), err.Error())
 		return
 	}
-	if resp.Body != nil {
-		defer resp.Body.Close()
-	}
-	if resp.StatusCode != http.StatusOK {
-		result.Passed = false
-	} else {
-		result.Passed = true
-	}
+	defer resp.Body.Close()
+	result.Passed = resp.StatusCode == http.StatusOK
 	summary := fmt.Sprintf("%s %s => %s", c.Request.Method, c.Request.URL.String(), resp.Status)
 	if c.ShowResponse {
 		var buf bytes.Buffer
