@@ -61,6 +61,7 @@ func (r Registry) RunTasks(ctx *Context) []*Result {
 		}
 		result.CompletedIn = time.Now().Sub(now)
 		results = append(results, result)
+		close(resultCh)
 	}
 	return results
 }
