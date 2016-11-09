@@ -7,12 +7,12 @@ import (
 	. "github.com/emicklei/go-selfdiagnose"
 )
 
-func TestCheckHttp(t *testing.T) {
+func TestCheckHTTP(t *testing.T) {
 	get, err := http.NewRequest("GET", "http://ernestmicklei.com", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	check := CheckHttp{Request: get}
+	check := NewCheckHTTP(get)
 	check.SetComment("blog access")
 
 	reg := &Registry{}
@@ -28,9 +28,9 @@ func TestCheckHttp(t *testing.T) {
 	}
 }
 
-func ExampleCheckHttp() {
+func ExampleCheckHTTP() {
 	get, _ := http.NewRequest("GET", "http://ernestmicklei.com", nil)
-	check := CheckHttp{Request: get}
+	check := NewCheckHTTP(get)
 	check.SetComment("blog access")
 	Register(check)
 }
