@@ -8,33 +8,28 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
-	"sync"
 
 	. "github.com/emicklei/go-selfdiagnose"
 )
 
-// CheckHTTP send a http.Request and check the status code. 200 OK = Passed
+// CheckHTTP send a http.Request and check the expected status code.
 type CheckHTTP struct {
 	BasicTask
-	request      *http.Request
-	mutex        *sync.Mutex
+	Method       string
+	URL          string
+	StatusCode   int
 	ShowResponse bool
 	HTTPClient   *http.Client
 }
 
 // NewCheckHTTP returns a CheckHTTP for threadsafe use of a Request.
-func NewCheckHTTP(r *http.Request) *CheckHTTP {
-	c := new(CheckHTTP)
-	c.mutex = new(sync.Mutex)
-	cp := *r
-	if r.Body != nil {
-		data, _ := ioutil.ReadAll(r.Body)
-		cp.Body = ioutil.NopCloser(bytes.NewReader(data))
+func NewCheckHTTP(method string, urlstr string, expectedStatus int) *CheckHTTP {
+	return &CheckHTTP{
+		Method:     method,
+		URL:        urlstr,
+		StatusCode: expectedStatus,
 	}
-	c.request = &cp
-	return c
 }
 
 // Run sends the request and updates the result.
@@ -43,24 +38,20 @@ func (c *CheckHTTP) Run(ctx *Context, result *Result) {
 	if client == nil {
 		client = http.DefaultClient
 	}
-	// make copy of request
-	request := *c.request
-	if request.Body != nil {
-		// safe copy body
-		c.mutex.Lock()
-		data, _ := ioutil.ReadAll(request.Body)
-		request.Body = ioutil.NopCloser(bytes.NewReader(data))
-		c.mutex.Unlock()
-	}
-
-	resp, err := client.Do(&request)
+	request, err := http.NewRequest(c.Method, c.URL, nil)
 	if err != nil {
 		result.Passed = false
-		result.Reason = fmt.Sprintf("%s %s => %s", request.Method, request.URL.String(), err.Error())
+		result.Reason = fmt.Sprintf("%s %s => %s", c.Method, c.URL, err.Error())
+		return
+	}
+	resp, err := client.Do(request)
+	if err != nil {
+		result.Passed = false
+		result.Reason = fmt.Sprintf("%s %s => %s", c.Method, c.URL, err.Error())
 		return
 	}
 	defer resp.Body.Close()
-	result.Passed = resp.StatusCode == http.StatusOK
+	result.Passed = resp.StatusCode == c.StatusCode
 	summary := fmt.Sprintf("%s %s => %s", request.Method, request.URL.String(), resp.Status)
 	if c.ShowResponse {
 		var buf bytes.Buffer

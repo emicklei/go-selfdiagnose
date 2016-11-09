@@ -8,11 +8,7 @@ import (
 )
 
 func TestCheckHTTP(t *testing.T) {
-	get, err := http.NewRequest("GET", "http://ernestmicklei.com", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	check := NewCheckHTTP(get)
+	check := NewCheckHTTP("GET", "http://ernestmicklei.com", http.StatusOK)
 	check.SetComment("blog access")
 
 	reg := &Registry{}
@@ -29,8 +25,7 @@ func TestCheckHTTP(t *testing.T) {
 }
 
 func ExampleCheckHTTP() {
-	get, _ := http.NewRequest("GET", "http://ernestmicklei.com", nil)
-	check := NewCheckHTTP(get)
+	check := NewCheckHTTP("GET", "http://ernestmicklei.com", http.StatusOK)
 	check.SetComment("blog access")
 	Register(check)
 }
