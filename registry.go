@@ -30,13 +30,14 @@ func (r Registry) RunTasks(ctx *Context) []*Result {
 		resultCh := make(chan *Result, 1)
 		now := time.Now()
 		go func() {
+			defer close(resultCh)
 			res := new(Result)
 			if t, ok := each.(HasSeverity); ok {
 				res.Severity = t.Severity()
 			}
 			res.Target = each
 			each.Run(ctx, res)
-			resultCh <- res // will not block if closed
+			resultCh <- res
 		}()
 		timeout := 1 * time.Second
 		// task can override the non-zero value
@@ -61,7 +62,6 @@ func (r Registry) RunTasks(ctx *Context) []*Result {
 		}
 		result.CompletedIn = time.Now().Sub(now)
 		results = append(results, result)
-		close(resultCh)
 	}
 	return results
 }
