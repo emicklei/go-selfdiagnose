@@ -17,12 +17,15 @@ type XMLReporter struct {
 
 // Report produces a XML report including a summary
 func (x XMLReporter) Report(results []*Result) {
+	c, f := checksAndFailures(results)
 	// silently ignore the errors
 	r := xmlReport{
 		Run:         time.Now(),
 		Since:       since,
 		Version:     VERSION,
 		CompletedIn: toMillisecondsString(totalDuration(results)),
+		Checks:      c,
+		Failures:    f,
 		Results:     buildTaskReports(results),
 	}
 	io.WriteString(x.Writer, xml.Header)
@@ -36,5 +39,7 @@ type xmlReport struct {
 	Since       time.Time    `xml:"since,attr"`
 	Version     string       `xml:"version,attr"`
 	CompletedIn string       `xml:"completedIn,attr"`
+	Checks      int          `xml:"checks,attr"`
+	Failures    int          `xml:"failures,attr"`
 	Results     []taskReport `xml:"results"`
 }
