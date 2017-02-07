@@ -11,9 +11,9 @@ import (
 )
 
 type runReport struct {
-	SelfDiagnose map[string]string `json:"selfdiagnose" `
-	Run          time.Time         `json:"run" `
-	Results      []taskReport      `json:"results" `
+	SelfDiagnose map[string]interface{} `json:"selfdiagnose" `
+	Run          time.Time              `json:"run" `
+	Results      []taskReport           `json:"results" `
 }
 
 type taskReport struct {
@@ -40,11 +40,14 @@ func buildTaskReports(results []*Result) (list []taskReport) {
 }
 
 func buildRunReport(results []*Result) runReport {
+	c, f := checksAndFailures(results)
 	return runReport{
-		SelfDiagnose: map[string]string{
+		SelfDiagnose: map[string]interface{}{
 			"version":     VERSION,
 			"since":       since.String(),
 			"completedIn": toMillisecondsString(totalDuration(results)),
+			"checks":      c,
+			"failures":    f,
 		},
 		Run:     time.Now(),
 		Results: buildTaskReports(results),
@@ -67,4 +70,14 @@ func totalDuration(results []*Result) (total time.Duration) {
 
 func toMillisecondsString(d time.Duration) string {
 	return strconv.FormatInt(d.Nanoseconds()/1000000, 10) // ms
+}
+
+func checksAndFailures(results []*Result) (checks, failures int) {
+	for _, r := range results {
+		checks++
+		if !r.Passed {
+			failures++
+		}
+	}
+	return
 }

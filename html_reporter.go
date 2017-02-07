@@ -80,7 +80,7 @@ var htmlTemplate = template.Must(template.New("Page").Parse(`
 	</table>
 	
 	<h4>
-		Checks:{{.TotalCount}}, Failures:{{.FailedCount}}, Time:{{.CompletedIn}} |
+		Checks: {{.TotalCount}}, Failures: {{.FailedCount}}, Time: {{.CompletedIn}} |
 		go-selfdiagnose {{.Version}} | <a href="?format=xml">XML</a>| <a href="?format=json">JSON</a> | since:{{.Since.Format "2006-01-02 3:04"}} report:{{.ReportDate.Format "2006-01-02 3:04"}} </td>
 	</h4>
 </body>
