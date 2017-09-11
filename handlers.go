@@ -10,7 +10,9 @@ import (
 	"strings"
 )
 
+// AddInternalHandlers registers HandleSelfdiagnose on "/internal/selfdiagnose{.html,.xml,.json}"
 func AddInternalHandlers() {
+	http.HandleFunc("/internal/selfdiagnose", HandleSelfdiagnose)
 	http.HandleFunc("/internal/selfdiagnose.html", HandleSelfdiagnose)
 	http.HandleFunc("/internal/selfdiagnose.xml", HandleSelfdiagnose)
 	http.HandleFunc("/internal/selfdiagnose.json", HandleSelfdiagnose)
