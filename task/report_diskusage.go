@@ -1,4 +1,5 @@
 // +build !windows
+// +build !appengine
 
 package task
 
@@ -6,7 +7,7 @@ import (
 	"fmt"
 	"syscall"
 
-	"github.com/emicklei/go-selfdiagnose"
+	selfdiagnose "github.com/emicklei/go-selfdiagnose"
 )
 
 const (
