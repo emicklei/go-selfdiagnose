@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/emicklei/go-selfdiagnose"
 )
@@ -18,7 +19,15 @@ func (r ReportHttpRequest) Run(ctx *selfdiagnose.Context, result *selfdiagnose.R
 		return
 	}
 	var buf bytes.Buffer
-	for k, v := range req.(*http.Request).Header {
+	// sort by key
+	keys := []string{}
+	headers := req.(*http.Request).Header
+	for k := range headers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		v := headers[k]
 		buf.WriteString(fmt.Sprintf("%s = %s<br/>", k, v))
 	}
 	result.Passed = true
