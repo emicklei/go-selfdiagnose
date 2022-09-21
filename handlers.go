@@ -12,6 +12,11 @@ import (
 
 // AddInternalHandlers registers HandleSelfdiagnose on "/internal/selfdiagnose{.html,.xml,.json}"
 func AddInternalHandlers() {
+	AddInternalHandlersTo(http.DefaultServeMux)
+}
+
+// AddInternalHandlersTo registers HandleSelfdiagnose on "/internal/selfdiagnose{.html,.xml,.json}"
+func AddInternalHandlersTo(mux *http.ServeMux) {
 	http.HandleFunc("/internal/selfdiagnose", HandleSelfdiagnose)
 	http.HandleFunc("/internal/selfdiagnose.html", HandleSelfdiagnose)
 	http.HandleFunc("/internal/selfdiagnose.xml", HandleSelfdiagnose)
