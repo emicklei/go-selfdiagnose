@@ -38,10 +38,24 @@ func TestReportInHtml(t *testing.T) {
 		check.SetSeverity(SeverityWarning)
 		reg.Register(check)
 	}
+	{
+		check := failure{}
+		check.SetSeverity(SeverityCritical)
+		reg.Register(check)
+	}
 	f, _ := os.Create("TestReportInHtml.html")
 	defer f.Close()
 	rep := HtmlReporter{f}
 	reg.Run(rep)
+}
+
+type failure struct{ BasicTask }
+
+func (r failure) Comment() string { return "bummer!" }
+
+func (r failure) Run(ctx *Context, result *Result) {
+	result.Passed = false
+	result.Reason = "murphy"
 }
 
 type reasonInHtml struct{}
