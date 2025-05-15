@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -16,13 +15,13 @@ func main() {
 	// add tasks
 	selfdiagnose.Register(task.ReportHttpRequest{})
 	selfdiagnose.Register(task.ReportHostname{})
-	selfdiagnose.Register(task.ReportCPU())
 	// add custom task
 	selfdiagnose.Register(CheckGithub{})
+	selfdiagnose.Register(task.ReportDiskusage{Path: "/usr/local/bin"}) // works on linux, darwin, freebsd, openbsd, windows
 
 	// fire up
 	log.Println("open http://localhost:9292/internal/selfdiagnose.html")
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":9292"), nil))
+	log.Fatal(http.ListenAndServe(":9292", nil))
 }
 
 type CheckGithub struct{}
