@@ -30,7 +30,7 @@ func (c CheckGithub) Comment() string { return "check availability of github.com
 
 func (c CheckGithub) Run(ctx *selfdiagnose.Context, result *selfdiagnose.Result) {
 	// NOTE: wrong url on purpose to see failure
-	_, err := http.Get("https://githup.com")
+	_, err := http.Get("https://githubb.com")
 	result.Passed = err == nil
 	if err != nil {
 		result.Reason = err.Error()
