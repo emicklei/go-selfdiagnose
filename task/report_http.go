@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/emicklei/go-selfdiagnose"
 )
 
-type ReportHttpRequest struct{}
+type ReportHttpRequest struct {
+	ShowAuthorization bool // if true, show the Authorization header
+}
 
 func (r ReportHttpRequest) Run(ctx *selfdiagnose.Context, result *selfdiagnose.Result) {
 	req, ok := ctx.Variables["http.request"]
@@ -28,7 +31,12 @@ func (r ReportHttpRequest) Run(ctx *selfdiagnose.Context, result *selfdiagnose.R
 	sort.Strings(keys)
 	for _, k := range keys {
 		v := headers[k]
-		buf.WriteString(fmt.Sprintf("%s = %s<br/>", k, v))
+		if k == "Authorization" && !r.ShowAuthorization && len(v) == 1 {
+			// mask the Authorization header value
+			buf.WriteString(fmt.Sprintf("%s = %s<br/>", k, strings.Repeat("*", len(v[0]))))
+		} else {
+			buf.WriteString(fmt.Sprintf("%s = %s<br/>", k, v))
+		}
 	}
 	result.Passed = true
 	result.Reason = buf.String()
